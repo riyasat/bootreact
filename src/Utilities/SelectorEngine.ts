@@ -13,8 +13,8 @@ declare global {
     appendTo(element: Element): void;
     /**@param element delete element from the selected HTML Element */
     removeElement(element: Element): void;
-    /**@param nameOrIdOrClass You can provide HTML Element id, name, class or TagName e.g. #id,name,.classname or body */
-    getElement(nameOrIdOrClass: string): Element | null;
+    /**@param selector You can provide HTML Element id, name, class or TagName e.g. #id,name,.classname or body */
+    getElement(selector: string): Element | null;
     /**Provides previous element of referenced HTML element*/
     prev(): Element | null;
     /**Provides next element of referenced HTML element*/
@@ -27,8 +27,8 @@ declare global {
     getChildren(): Element[] | null;
   }
   interface Document {
-    /**@param nameOrIdOrClass You can provide HTML Element id, name, class or TagName e.g. #id,name,.classname or body */
-    getElement(nameOrIdOrClass: string): Element | null;
+    /**@param selector You can provide HTML Element id, name, class or TagName e.g. #id,name,.classname or body */
+    getElement(selector: string): Element | null;
   }
   interface String {
     capitalize(): string;
@@ -54,45 +54,25 @@ declare global {
   Element.prototype.toggleClass = function (className: string) {
     let _classes = className.split(" ");
     _classes.forEach((cls: string) => {
-      if (this.hasClass(cls)) {
-        this.removeClass(cls);
-      } else {
-        this.addClass(cls);
-      }
+      this.classList.toggle(cls);
     });
   };
-  Element.prototype.appendTo = function (element: Element | Element) {
+  Element.prototype.appendTo = function (element: Element) {
     if (!element)
       throw new Error(
         "Element not found. You must have to specify HTML element"
       );
     this.innerHTML += element.outerHTML;
   };
-  Element.prototype.removeElement = function (element: Element | Element) {
+  Element.prototype.removeElement = function (element: Element) {
     if (!element)
       throw new Error(
         "Element not found. You must have to specify HTML element"
       );
     element.remove();
   };
-  Element.prototype.getElement = function (
-    nameOrIdOrClass: string
-  ): Element | null {
-    let _name: string = "";
-    if (nameOrIdOrClass.indexOf("#") === 0) {
-      _name = nameOrIdOrClass.split("#")[1];
-      return document.getElementById(_name);
-    }
-    if (nameOrIdOrClass.indexOf(".") === 0) {
-      _name = nameOrIdOrClass.split(".")[1];
-      return document.getElementsByClassName(_name)[0] as Element;
-    }
-    if (document.getElementsByName(nameOrIdOrClass)) {
-      return document.getElementsByName(nameOrIdOrClass)[0];
-    }
-    if (document.getElementsByTagName(nameOrIdOrClass))
-      return document.getElementsByTagName(nameOrIdOrClass)[0] as Element;
-    return null;
+  Element.prototype.getElement = function (selector: string): Element | null {
+    return document.querySelector(selector);
   };
   Element.prototype.prev = function () {
     return this.previousElementSibling;
@@ -111,24 +91,8 @@ declare global {
   };
   //#endregion
   //#region Document Utilities
-  Document.prototype.getElement = function (
-    nameOrIdOrClass: string
-  ): Element | null {
-    let _name: string = "";
-    if (nameOrIdOrClass.indexOf("#") === 0) {
-      _name = nameOrIdOrClass.split("#")[1];
-      return document.getElementById(_name);
-    }
-    if (nameOrIdOrClass.indexOf(".") === 0) {
-      _name = nameOrIdOrClass.split(".")[1];
-      return document.getElementsByClassName(_name)[0] as Element;
-    }
-    if (document.getElementsByName(nameOrIdOrClass).length > 0) {
-      return document.getElementsByName(nameOrIdOrClass)[0];
-    }
-    if (document.getElementsByTagName(nameOrIdOrClass).length > 0)
-      return document.getElementsByTagName(nameOrIdOrClass)[0] as Element;
-    return null;
+  Document.prototype.getElement = function (selector: string): Element | null {
+    return document.querySelector(selector);
   };
   //#endregion
   //#region String
